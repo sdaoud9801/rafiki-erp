@@ -1,0 +1,35 @@
+.item {
+    padding: 10px;
+    border: 1px solid grey;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+}
+
+.item > select {
+    margin-top: 2px;
+}
+
+.item > input[type="number"] {
+    margin-top: 2px;
+    width: 100%;
+}
+
+.itemHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.itemLabel {
+    font-size: 0.8rem;
+    margin-top: 12px;
+}
+
+.deleteButton {
+    background-color: #ff0015;
+    border-radius: 10px;
+    color: white;
+    border: none;
+    padding: 8px;
+}

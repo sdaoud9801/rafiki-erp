@@ -1,0 +1,96 @@
+@import url('https://fonts.googleapis.com/css2?family=Fontdiner+Swanky&family=Jua&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+* {
+    box-sizing: border-box;
+    font-family: "poppins";
+}
+
+body {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    color: #D62757;
+    margin: 0px;
+    padding: 0px;
+}
+
+nav {
+    background-color: #D62757;
+    display: flex;
+    justify-content : center;
+    padding: 20px;
+    color: white;
+    width: 100%;
+}
+
+#main {
+    padding: 0px;
+    overflow-x: hidden;
+}
+
+form {
+    border: 2px solid;
+    min-width: 320px;
+}
+
+select {
+    color: black;
+    margin-top: 5px;
+    padding: 2px;
+    width: 100%;
+    border: 1px solid black;
+}
+
+select:focus {
+    color: none;    
+}
+
+input[type="text"] {
+    width: 100%;
+    color: black;
+    padding: 2px;
+    border: 1px solid black;
+}
+
+.items {
+    padding: 10px 10px;
+    border-top: 2px solid #D62757;
+}
+
+.sectionHeader {
+    padding: 0px;
+    margin: 0px;
+}
+
+.addItemButton {
+    background-color: #D62757;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: 10px;
+}
+
+.delivery {
+    padding: 10px;
+    border-top: 1px solid #D62757;
+}
+
+.delivery > input {
+    width: 100%;
+    margin-top: 5px;
+}
+
+.preview {
+    padding: 10px;
+    border: 1px solid #D62757;
+}
+
+.preview table, .preview table td, .preview table tr, .preview table th  {
+    width: 100%;
+    color: black;
+    border-top: 1px solid black;
+    border-collapse: collapse;
+    padding: 5px;
+    text-align: left;
+}
