@@ -94,3 +94,15 @@ input[type="text"] {
     padding: 5px;
     text-align: left;
 }
+
+.createPurchaseButtonContainer {
+    padding: 10px;
+}
+
+.createPurchase {
+    background-color: #44D627;
+    padding: 10px;
+    color: white;
+    border: none;
+    font-family: "poppins";
+}

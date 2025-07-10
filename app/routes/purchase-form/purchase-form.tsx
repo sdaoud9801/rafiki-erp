@@ -1,7 +1,15 @@
 import { useState } from "react"
 import style from "./purchase-form.module.css";
 import Supplier from "./supplier/Supplier";
-import Item from './item/Item'
+import Item from './item/Item';
+import {
+    handleAddItem,
+    deleteItem,
+    updateItemCategory,
+    updateItemName,
+    updateItemQuantity,
+    updateItemCost
+} from "./helper";
 
 type Item = {
     position: number,
@@ -20,12 +28,16 @@ const initialItem = {
 };
 
 export default function PurchaseForm() {
-    let [supplier, setSupplier] = useState("");
+    const [supplier, setSupplier] = useState("");
     const [items, setItems]: [Item[], any] = useState([initialItem]);
     const [delivery, setDelivery]: [string, any] = useState("0");
+    items.forEach((item) => {
+        console.log(item);
+    })
     let itemCosts = items.map((item) => {
         return parseInt(item.cost);
     });
+    // calculate total for preview
     let total;
     if (items.length > 1) {
         total = itemCosts.reduce((accumulated, currentValue) => {
@@ -34,81 +46,22 @@ export default function PurchaseForm() {
     } else {
         total = parseInt(items[0].cost) + parseInt(delivery);
     }
-    console.log(items);
-    function handleAddItem(e: React.MouseEvent) {
+
+    function validate(e: React.MouseEvent) {
         e.preventDefault();
-        let newItem = {
-            ...initialItem,
-            position: items.length
+        // validate supplier is not empty
+        if (supplier === "") {
+            throw new Error("Supplier field is empty");
         }
-        let newItems = [...items, newItem];
-        setItems(newItems);
-    };
-
-    function deleteItem(position: number, e: React.MouseEvent) {
-        e.preventDefault();
-        if(items.length === 1) {
-            return
-        }
-        let newItems = items.filter((item) => {
-            return (item.position !== position)
-        });
-        for (let i = 0; i < newItems.length; i++) {
-            newItems[i].position = i;
-        }
-        setItems(newItems);
-    }
-
-    function updateItemCategory(position: number, category: string) {
-        let itemToUpdate = items.filter((item) => {
-            return (item.position === position)
-        })[0];
-        let updatedItem = {
-            ...itemToUpdate,
-            category
-        }
-        let newItems = [...items];
-        newItems[position] = updatedItem;
-        setItems(newItems);
-    }
-
-    function updateItemName(position: number, name: string) {
-        let itemToUpdate = items.filter((item) => {
-            return (item.position === position)
-        })[0];
-        let updatedItem = {
-            ...itemToUpdate,
-            item: name
-        }
-        let newItems = [...items];
-        newItems[position] = updatedItem;
-        setItems(newItems);
-    }
-
-    function updateItemQuantity(position: number, quantity: string) {
-        let itemToUpdate = items.filter((item) => {
-            return (item.position === position)
-        })[0];
-        let updatedItem = {
-            ...itemToUpdate,
-            quantity
-        }
-        let newItems = [...items];
-        newItems[position] = updatedItem;
-        setItems(newItems);
-    }
-
-    function updateItemCost(position: number, cost: string) {
-        let itemToUpdate = items.filter((item) => {
-            return (item.position === position)
-        })[0];
-        let updatedItem = {
-            ...itemToUpdate,
-            cost
-        }
-        let newItems = [...items];
-        newItems[position] = updatedItem;
-        setItems(newItems);
+        items.forEach((item) => {
+            if (item.category === "-- select an option --") {
+                throw new Error(`Category not selected for item #${item.position}`);
+            } else if (item.item === "-- select an option --") {
+                throw new Error(`Item not selected for item #${item.position}`);
+            } else if (parseInt(item.cost) < 0) {
+                throw new Error(``)
+            }
+        })
     }
 
     return (
@@ -125,6 +78,8 @@ export default function PurchaseForm() {
                             items.map((item) => {
                                 return <Item
                                     position={item.position}
+                                    items={items}
+                                    setItems={setItems}
                                     deleteItem={deleteItem}
                                     updateItemCategory={updateItemCategory}
                                     updateItemName={updateItemName}
@@ -134,13 +89,13 @@ export default function PurchaseForm() {
                                 />
                             })
                         }
-                        <button className={style.addItemButton} onClick={handleAddItem}>Add item</button>
+                        <button className={style.addItemButton} onClick={(e) => { handleAddItem(e, items, setItems) }}>Add item</button>
                     </div>
                     <div className={style.delivery}>
                         <label>
                             Delivery cost
                         </label>
-                        <input type="number" onChange={(e) => { setDelivery(e.target.value) }}></input>
+                        <input type="number" onChange={(e) => { setDelivery(e.target.value) }} min="0"></input>
                     </div>
                     <div className={style.preview}>
                         <p>Preview</p>
@@ -170,6 +125,9 @@ export default function PurchaseForm() {
                                 <td>{total ? total : null}</td>
                             </tr>
                         </table>
+                    </div>
+                    <div className={style.createPurchaseButtonContainer}>
+                        <button className={style.createPurchase} onClick={validate}>Create purchase</button>
                     </div>
                 </form>
             </div>
