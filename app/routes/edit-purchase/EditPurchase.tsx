@@ -3,7 +3,6 @@ import style from "./purchase-form.module.css";
 import Supplier from "./supplier/Supplier";
 import Item from './item/Item';
 import Nav from '../../components/Nav/Nav'
-import type { Route } from "./+types/product";
 import {
     handleAddItem,
     deleteItem,
@@ -30,10 +29,46 @@ const initialItem = {
     cost: ""
 };
 
-export async function clientLoader() {
-    const res = await fetch('http://localhost:3000/formitems');
-    const returnObject = await res.json();
-    return returnObject;
+export async function clientLoader({
+    params
+}: {
+    params: {
+        pid: string
+    }
+}) {
+    console.log(params.pid);
+    const [formItemsRes, purchaseRes] = await Promise.all([fetch('http://localhost:3000/formitems'), fetch(`http://localhost:3000/edit/${params.pid}`)]);
+    const [formItems, purchase]: [any, {
+        purchase: {
+            date: string;
+            delivery: number;
+            items: {
+                item_name: string,
+                item_quantity: number,
+                item_cost: number,
+                item_category: string
+            }[] ;
+            purchase_id: number;
+            supplier: string
+        }
+    }] = await Promise.all([formItemsRes.json(), purchaseRes.json()]);
+    let purchaseItemsCopy = [...purchase.purchase.items];
+    let newPurchaseItems: Item[] = []
+    for(let i=0;i<purchaseItemsCopy.length;i++){
+        let purchaseItem = purchaseItemsCopy[i];
+        newPurchaseItems.push({
+            position: i,
+            category: purchaseItem.item_category,
+            item: purchaseItem.item_name,
+            quantity: purchaseItem.item_quantity.toString(),
+            cost: purchaseItem.item_cost.toString()
+        })
+    }
+    let newPurchase = {
+        ...purchase.purchase,
+        items: newPurchaseItems
+    }
+    return {formItems, purchase: newPurchase};
 }
 
 export async function HydrateFallBack() {
@@ -42,16 +77,34 @@ export async function HydrateFallBack() {
 
 export default function PurchaseForm({
     loaderData
-}: Route.ComponentProps) {
-    let categoriesAndItems = loaderData.items;
-    let suppliers = loaderData.suppliers;
-    const [supplier, setSupplier] = useState("");
-    const [items, setItems]: [Item[], any] = useState([initialItem]);
-    const [delivery, setDelivery]: [string, any] = useState("0");
+}: {
+    loaderData: {
+        formItems: any,
+        purchase: {
+            items: Item[],
+            date: string,
+            delivery: string,
+            purchase_id: number,
+            supplier: string
+        }
+    }
+}) {
+    let {formItems, purchase}: {
+        formItems: any,
+        purchase: {
+            items: Item[],
+            date: string,
+            delivery: string,
+            purchase_id: number,
+            supplier: string
+        }
+    } = loaderData;
+    let categoriesAndItems = formItems.items;
+    let suppliers = formItems.suppliers;
+    const [supplier, setSupplier] = useState(purchase.supplier);
+    const [items, setItems]: [Item[], any] = useState(purchase.items);
+    const [delivery, setDelivery]: [string, any] = useState(purchase.delivery);
     const [error, setError]: [any, any] = useState(false);
-    items.forEach((item) => {
-        console.log(item);
-    });
     let itemCosts = items.map((item) => {
         return parseInt(item.cost);
     });
@@ -72,7 +125,6 @@ export default function PurchaseForm({
             delete returnItem.position;
             return returnItem
         })
-        console.log(items);
         try {
             validate(
                 e,
@@ -81,13 +133,14 @@ export default function PurchaseForm({
                 items,
         
             );
-            console.log(items);
-            let res = await fetch('http://localhost:3000/create-purchase', {
+            let res = await fetch('http://localhost:3000/update-purchase', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
+                    purchase_id: purchase.purchase_id,
+                    date: purchase.date,
                     supplier,
                     delivery,
                     items: postableItems
@@ -107,7 +160,7 @@ export default function PurchaseForm({
             <Nav />
             <div id="main">
                 <form action="" style={style}>
-                    <Supplier setSupplier={setSupplier} suppliers={suppliers}/>
+                    <Supplier setSupplier={setSupplier} suppliers={suppliers} initialSupplier={supplier}/>
                     <div className={style.items}>
                         <p className={style.sectionHeader}>Items</p>
                         {
@@ -115,6 +168,10 @@ export default function PurchaseForm({
                                 return <Item
                                     position={item.position}
                                     items={items}
+                                    initialItem={item.item}
+                                    initialCategory={item.category}
+                                    initialQuantity={item.quantity}
+                                    initialCost={item.cost}
                                     categoriesAndItems={categoriesAndItems}
                                     setItems={setItems}
                                     deleteItem={deleteItem}
@@ -132,7 +189,7 @@ export default function PurchaseForm({
                         <label>
                             Delivery cost
                         </label>
-                        <input type="number" onChange={(e) => { setDelivery(e.target.value) }} min="0"></input>
+                        <input type="number" value={delivery} onChange={(e) => { setDelivery(e.target.value) }} min="0"></input>
                     </div>
                     <div className={style.preview}>
                         <p>Preview</p>
@@ -164,7 +221,7 @@ export default function PurchaseForm({
                         </table>
                     </div>
                     <div className={style.createPurchaseButtonContainer}>
-                        <button className={style.createPurchase} onClick={submit}>Create purchase</button>
+                        <button className={style.createPurchase} onClick={submit}>Edit purchase</button>
                     </div>
                     {
                         error ?

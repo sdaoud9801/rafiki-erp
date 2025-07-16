@@ -1,21 +1,24 @@
 import { useState } from "react";
 import style from './supplier.module.css';
 
-export default function Supplier({ setSupplier, suppliers }: { setSupplier: (param: string) => void, suppliers: string[]}) {
+export default function Supplier({ setSupplier, suppliers, initialSupplier }: { setSupplier: (param: string) => void, suppliers: string[], initialSupplier: string}) {
     let [other, setOther] = useState(false);
-    function checkIfOther(value: string){
+    let [innerSupplier, setInnerSupplier] = useState(initialSupplier);
+    function updateSupplier(value: string){
         if(value === "other"){
             setOther(true);
+            setInnerSupplier('other');
             setSupplier('');
         } else {
             setOther(false);
+            setInnerSupplier(value);
             setSupplier(value);
         }
     }
     return (
         <div className={style["supplier-section"]} style={style}>
             <label htmlFor="supplier">Supplier</label>
-            <select name="supplier" id="supplier" onChange={(e)=>{checkIfOther(e.target.value)}}>
+            <select name="supplier" id="supplier" value={innerSupplier} onChange={(e)=>{updateSupplier(e.target.value)}}>
                 <option selected disabled>-- Select an option --</option>
                 {
                     suppliers.map((supplier)=>{

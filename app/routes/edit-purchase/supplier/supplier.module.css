@@ -1,0 +1,12 @@
+.supplier-section {
+    padding: 15px 5px;
+}
+
+label {
+    display: block;
+}
+
+label[for="other-supplier"] {
+    margin-top: 5px;
+    display: block;
+}
