@@ -30,7 +30,7 @@ export default function Login() {
         let response = await res.json();
         let {status} = response;
         if(status == true){
-            window.location.replace('http://localhost:5173/view-purchases');
+            window.location.replace('/view-purchases');
         }
         else {
             setError({
