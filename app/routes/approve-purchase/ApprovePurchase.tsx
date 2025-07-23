@@ -4,7 +4,7 @@ import UnapprovedPurchase from "./UnapprovedPuchase/UnapprovedPurchase";
 import Error from "~/components/Error/Error";
 
 export async function clientLoader() {
-    let res = await fetch('http://localhost:3000/admin/unapprovedpurchases', {
+    let res = await fetch('/admin/unapprovedpurchases', {
         credentials: 'include'
     });
     let loaderData = await res.json();

@@ -33,7 +33,7 @@ const initialItem = {
 
 
 export async function clientLoader() {
-    const res = await fetch('http://localhost:3000/user/purchase/formitems', {
+    const res = await fetch('/user/purchase/formitems', {
         credentials: 'include'
     });
     const returnObject = await res.json();
@@ -109,7 +109,7 @@ export default function PurchaseForm({
 
             );
             console.log(items);
-            let res = await fetch('http://localhost:3000/user/purchase/create-purchase', {
+            let res = await fetch('/user/purchase/create-purchase', {
                 method: 'POST',
                 credentials: 'include',
                 headers: {

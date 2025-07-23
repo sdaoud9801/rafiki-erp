@@ -67,7 +67,7 @@ export default function CreateCategories({
         e.preventDefault();
         try {
             validate();
-            let res = await fetch('http://localhost:3000/admin/category', {
+            let res = await fetch('/admin/category', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

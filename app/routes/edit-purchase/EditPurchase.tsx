@@ -30,7 +30,7 @@ export async function clientLoader({
     }
 }) {
     console.log(params.pid);
-    const res = await fetch(`http://localhost:3000/user/edit/${params.pid}`, {
+    const res = await fetch(`/user/edit/${params.pid}`, {
         credentials: 'include'
     });
     let returnObject = await res.json();
@@ -114,7 +114,7 @@ export default function PurchaseForm({
                 delivery,
                 items,
             );
-            let res = await fetch('http://localhost:3000/user/update-purchase', {
+            let res = await fetch('/user/update-purchase', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

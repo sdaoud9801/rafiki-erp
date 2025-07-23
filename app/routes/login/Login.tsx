@@ -16,7 +16,7 @@ export default function Login() {
             message: ''
         })
         setLoading(true);
-        let res = await fetch('http://localhost:3000/login', {
+        let res = await fetch('/login', {
             method: 'POST',
             credentials: 'include',
             headers: {

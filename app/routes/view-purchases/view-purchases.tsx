@@ -5,7 +5,7 @@ import Error from "~/components/Error/Error";
 import PurchaseRow from "./PurchaseRow/PurchaseRow";
 
 export async function clientLoader() {
-    const res = await fetch('http://localhost:3000/user/view-purchases/viewitems', {
+    const res = await fetch('/user/view-purchases/viewitems', {
         credentials: 'include'
     });
     const purchases = await res.json();
