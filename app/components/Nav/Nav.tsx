@@ -13,7 +13,7 @@ export default function Nav({role}: {role: 'admin' | 'user' | undefined}){
     }
     function logOut(){
         document.cookie = 'auth=';
-        window.location.replace('http://localhost:5173/');
+        window.location.replace('/');
     }
     if(role == 'admin') {
         return(
