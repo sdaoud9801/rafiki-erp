@@ -29,7 +29,7 @@ export default function UnapprovedPurchase({ purchase }: {
     async function approvePurchase() {
         setError(false);
         setLoading(true);
-        let res = await fetch('http://localhost:3000/admin/approvepurchase', {
+        let res = await fetch('/admin/approvepurchase', {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
