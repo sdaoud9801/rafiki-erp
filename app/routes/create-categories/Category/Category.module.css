@@ -1,0 +1,33 @@
+.category {
+    padding-top: 10px;
+}
+.categoryNameContainer{
+    border: 1px solid grey;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.categoryName {
+    font-weight: 800;
+}
+
+.item {
+    border: 1px solid grey;
+    padding: 10px;
+}
+
+.itemsShow {
+    display: block;
+    opacity: 1;
+}
+
+.itemsHide {
+    display: none;
+    opacity: 0;
+}
+
+.pointerDown {
+    transform: rotate(0.5turn);
+}
+

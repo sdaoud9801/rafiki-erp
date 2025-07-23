@@ -2,8 +2,8 @@ import { useState } from "react";
 import style from "./purchase-form.module.css";
 import Supplier from "./supplier/Supplier";
 import Item from './item/Item';
-import Nav from '../../components/Nav/Nav'
-import type { Route } from "./+types/product";
+import Nav from '../../components/Nav/Nav';
+import Error from "~/components/Error/Error";
 import {
     handleAddItem,
     deleteItem,
@@ -30,8 +30,12 @@ const initialItem = {
     cost: ""
 };
 
+
+
 export async function clientLoader() {
-    const res = await fetch('http://localhost:3000/formitems');
+    const res = await fetch('http://localhost:3000/user/purchase/formitems', {
+        credentials: 'include'
+    });
     const returnObject = await res.json();
     return returnObject;
 }
@@ -40,18 +44,40 @@ export async function HydrateFallBack() {
     return <div>...Loading</div>
 }
 
+type ErrorObject = {
+    error: string,
+    data: null
+}
+
+type ReturnObject = {
+    error: null,
+    data: {
+        categories: any,
+        items: any,
+        suppliers: any,
+        role: 'admin' | 'user'
+    }
+}
+
 export default function PurchaseForm({
     loaderData
-}: Route.ComponentProps) {
-    let categoriesAndItems = loaderData.items;
-    let suppliers = loaderData.suppliers;
+}: {
+    loaderData: ReturnObject | ErrorObject;
+}) {
+    if (loaderData.error) {
+        return (<Error message={loaderData.error} />)
+    }
+    let returnObject = loaderData as ReturnObject;
+    let { data } = returnObject;
+    let categoriesAndItems = data.items;
+    let suppliers = data.suppliers;
+    let role = data.role;
     const [supplier, setSupplier] = useState("");
     const [items, setItems]: [Item[], any] = useState([initialItem]);
     const [delivery, setDelivery]: [string, any] = useState("0");
     const [error, setError]: [any, any] = useState(false);
-    items.forEach((item) => {
-        console.log(item);
-    });
+    const [loading, setLoading] = useState(false);
+    const [success, setSuccess] = useState(false);
     let itemCosts = items.map((item) => {
         return parseInt(item.cost);
     });
@@ -67,8 +93,9 @@ export default function PurchaseForm({
     async function submit(e: React.MouseEvent) {
         e.preventDefault();
         setError(false);
-        let postableItems = items.map((item)=>{
-            let returnItem:any = {...item};
+        setLoading(true);
+        let postableItems = items.map((item) => {
+            let returnItem: any = { ...item };
             delete returnItem.position;
             return returnItem
         })
@@ -79,11 +106,12 @@ export default function PurchaseForm({
                 supplier,
                 delivery,
                 items,
-        
+
             );
             console.log(items);
-            let res = await fetch('http://localhost:3000/create-purchase', {
+            let res = await fetch('http://localhost:3000/user/purchase/create-purchase', {
                 method: 'POST',
+                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -93,21 +121,79 @@ export default function PurchaseForm({
                     items: postableItems
                 })
             });
-            let {status} = await res.json();
-        } catch (e: any){
+            let { error, data } = await res.json();
+            if (error) {
+                setError({
+                    error: true,
+                    message: error
+                })
+            } else {
+                setSuccess(true);
+            }
+        } catch (e: any) {
             setError({
                 error: true,
                 message: e.message
             })
         }
+        setLoading(false)
     }
-
+    if(success){
+        return (
+         <>
+                <Nav role={returnObject.data.role} />
+                <div id={style.main}>
+                    <form className={style.innerContainer}>
+                        <h3 className={style.successMessage}>
+                            Purchase edited successfully
+                        </h3>
+                        <div className={style.preview}>
+                            <div className={style.successSupplier}>
+                                <strong>Supplier: </strong>
+                                {supplier}
+                            </div>
+                            <table>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Amount</th>
+                                    <th>Cost</th>
+                                </tr>
+                                {
+                                    items.map((item) => {
+                                        return (
+                                            <tr>
+                                                <td>{item.item}</td>
+                                                <td>{item.quantity}</td>
+                                                <td>{item.cost}</td>
+                                            </tr>
+                                        )
+                                    })}
+                                <tr>
+                                    <th></th>
+                                    <th>Delivery:</th>
+                                    <td>{delivery}</td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <th>Total:</th>
+                                    <td>{total ? total : null}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </form>
+                </div>
+            </>
+        )
+    }
     return (
         <>
-            <Nav />
-            <div id="main">
+            <Nav role={role} />
+            <div id={style.main}>
                 <form action="" style={style}>
-                    <Supplier setSupplier={setSupplier} suppliers={suppliers}/>
+                    <div className={style.pageHeader}>
+                        Create purchase
+                    </div>
+                    <Supplier setSupplier={setSupplier} suppliers={suppliers} />
                     <div className={style.items}>
                         <p className={style.sectionHeader}>Items</p>
                         {
@@ -164,10 +250,10 @@ export default function PurchaseForm({
                         </table>
                     </div>
                     <div className={style.createPurchaseButtonContainer}>
-                        <button className={style.createPurchase} onClick={submit}>Create purchase</button>
+                        <button className={loading ? style.createPurchaseLoading : style.createPurchase} onClick={loading ? ()=>{} : submit}>Create purchase</button>
                     </div>
                     {
-                        error ?
+                        error.error ?
                             (<div className={style.errorMessageContainer}>
                                 <div className={style.errorMessage}>
                                     Error: <br></br> {error.message}
@@ -175,7 +261,18 @@ export default function PurchaseForm({
                             </div>) :
                             null
                     }
-
+                    {
+                        loading ? (
+                            <div className={style.loadingMessageContainer}>
+                                <div className={style.loading}>
+                                    Loading
+                                    <div className={style.loadingSpinner}></div>
+                                </div>
+                            </div>
+                        ) : (
+                            null
+                        )
+                    }
                 </form>
             </div>
         </>

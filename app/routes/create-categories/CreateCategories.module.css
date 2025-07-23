@@ -1,0 +1,111 @@
+.outerContainer {
+    display: flex;
+    justify-content: center;
+    background-color: #f1b8c7e1;
+    min-height: 100vh;
+}
+
+.innerContainer {
+    border: 1px solid grey;
+    border-radius: 10px;
+    margin-top: 30px;
+    width: 100%;
+    max-width: 560px;
+    background-color: white;
+    padding: 0px 10px;
+}
+
+.pageHeader {
+    color: #D62757; 
+    border-bottom: 1px solid #D62757;
+    margin: 0px;
+    text-align: center;
+    padding: 5px;
+}
+
+.createCategoryContainer {  
+    border-bottom: 1px solid #D62757;
+}
+
+.categoryLabel {
+    display: block;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.inputText {
+    display: block;
+    margin-top: 0px;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.sectionHeader {
+    color: #D62757;
+    margin: 0px;
+    text-align: center;
+    border-bottom: 1px solid #D62757;
+    padding: 5px;
+    font-size: 1.1rem;
+    font-weight: 500;
+
+}
+
+.createCategoryButton {
+    display: block;
+    background-color: #44D627;
+    color: white;
+    border: none;
+    padding: 10px 5px;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.errorMessage,
+.successMessage {
+    padding: 5px;
+    border-radius: 2px;
+}
+
+.errorMessage {
+    background-color: red;
+    color: white;
+}
+
+.successMessage {
+    background-color: #44D627;
+    color: white;
+}
+
+.loading {
+    background-color: grey;
+    padding: 5px;
+    margin-top: 20px;
+    color: white;
+    display: flex;
+    align-items: center;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.loadingSpinner {
+    height: 20px;
+    width: 20px;
+    color: white;
+    background-color: grey;
+    border-top: 5px solid white;
+    border-radius: 100%;
+    margin-left: 5px;
+    animation: rotate;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0turn)
+    }
+    to {
+        transform: rotate(1turn)
+    }
+}

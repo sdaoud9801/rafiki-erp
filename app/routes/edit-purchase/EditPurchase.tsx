@@ -2,7 +2,8 @@ import { useState } from "react";
 import style from "./purchase-form.module.css";
 import Supplier from "./supplier/Supplier";
 import Item from './item/Item';
-import Nav from '../../components/Nav/Nav'
+import Nav from '../../components/Nav/Nav';
+import Error from "~/components/Error/Error";
 import {
     handleAddItem,
     deleteItem,
@@ -21,14 +22,6 @@ type Item = {
     cost: string
 }
 
-const initialItem = {
-    position: 0,
-    category: "",
-    item: "",
-    quantity: "",
-    cost: ""
-};
-
 export async function clientLoader({
     params
 }: {
@@ -37,38 +30,26 @@ export async function clientLoader({
     }
 }) {
     console.log(params.pid);
-    const [formItemsRes, purchaseRes] = await Promise.all([fetch('http://localhost:3000/formitems'), fetch(`http://localhost:3000/edit/${params.pid}`)]);
-    const [formItems, purchase]: [any, {
-        purchase: {
-            date: string;
-            delivery: number;
-            items: {
-                item_name: string,
-                item_quantity: number,
-                item_cost: number,
-                item_category: string
-            }[] ;
-            purchase_id: number;
-            supplier: string
-        }
-    }] = await Promise.all([formItemsRes.json(), purchaseRes.json()]);
-    let purchaseItemsCopy = [...purchase.purchase.items];
-    let newPurchaseItems: Item[] = []
-    for(let i=0;i<purchaseItemsCopy.length;i++){
-        let purchaseItem = purchaseItemsCopy[i];
-        newPurchaseItems.push({
-            position: i,
-            category: purchaseItem.item_category,
-            item: purchaseItem.item_name,
-            quantity: purchaseItem.item_quantity.toString(),
-            cost: purchaseItem.item_cost.toString()
-        })
+    const res = await fetch(`http://localhost:3000/user/edit/${params.pid}`, {
+        credentials: 'include'
+    });
+    let returnObject = await res.json();
+    return returnObject;
+}
+
+type ErrorObject = {
+    error: string,
+    data: null
+}
+
+type ReturnObject = {
+    error: null,
+    data: {
+        purchase: any
+        items: any,
+        suppliers: any,
+        role: 'user' | 'admin'
     }
-    let newPurchase = {
-        ...purchase.purchase,
-        items: newPurchaseItems
-    }
-    return {formItems, purchase: newPurchase};
 }
 
 export async function HydrateFallBack() {
@@ -78,33 +59,33 @@ export async function HydrateFallBack() {
 export default function PurchaseForm({
     loaderData
 }: {
-    loaderData: {
-        formItems: any,
-        purchase: {
-            items: Item[],
-            date: string,
-            delivery: string,
-            purchase_id: number,
-            supplier: string
-        }
+    loaderData: ErrorObject | ReturnObject
+}
+) {
+    if (loaderData.error) {
+        return (<Error message={loaderData.error} />)
     }
-}) {
-    let {formItems, purchase}: {
-        formItems: any,
+    let returnObject = loaderData as ReturnObject;
+    let { data } = returnObject;
+    let { purchase, role }: {
+        items: any,
         purchase: {
             items: Item[],
             date: string,
             delivery: string,
             purchase_id: number,
             supplier: string
-        }
-    } = loaderData;
-    let categoriesAndItems = formItems.items;
-    let suppliers = formItems.suppliers;
+        },
+        role: 'admin' | 'user'
+    } = data;
+    let categoriesAndItems = data.items;
+    let suppliers = data.suppliers;
     const [supplier, setSupplier] = useState(purchase.supplier);
     const [items, setItems]: [Item[], any] = useState(purchase.items);
     const [delivery, setDelivery]: [string, any] = useState(purchase.delivery);
     const [error, setError]: [any, any] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [success, setSuccess] = useState(false);
     let itemCosts = items.map((item) => {
         return parseInt(item.cost);
     });
@@ -119,9 +100,10 @@ export default function PurchaseForm({
     }
     async function submit(e: React.MouseEvent) {
         e.preventDefault();
+        setLoading(true);
         setError(false);
-        let postableItems = items.map((item)=>{
-            let returnItem:any = {...item};
+        let postableItems = items.map((item) => {
+            let returnItem: any = { ...item };
             delete returnItem.position;
             return returnItem
         })
@@ -131,13 +113,13 @@ export default function PurchaseForm({
                 supplier,
                 delivery,
                 items,
-        
             );
-            let res = await fetch('http://localhost:3000/update-purchase', {
+            let res = await fetch('http://localhost:3000/user/update-purchase', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
+                credentials: 'include',
                 body: JSON.stringify({
                     purchase_id: purchase.purchase_id,
                     date: purchase.date,
@@ -146,21 +128,76 @@ export default function PurchaseForm({
                     items: postableItems
                 })
             });
-            let {status} = await res.json();
-        } catch (e: any){
+            let {
+                    error
+                } = await res.json();
+            if(!error){
+                setSuccess(true);
+            }
+        } catch (e: any) {
             setError({
                 error: true,
                 message: e.message
             })
         }
+        setLoading(false);
     }
-
+    if (success) {
+        return (
+            <>
+                <Nav role={returnObject.data.role} />
+                <div id={style.main}>
+                    <form className={style.innerContainer}>
+                        <h3 className={style.successMessage}>
+                            Purchase edited successfully
+                        </h3>
+                        <div className={style.preview}>
+                            <div className={style.successSupplier}>
+                                <strong>Supplier: </strong>
+                                {supplier}
+                            </div>
+                            <table>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Amount</th>
+                                    <th>Cost</th>
+                                </tr>
+                                {
+                                    items.map((item) => {
+                                        return (
+                                            <tr>
+                                                <td>{item.item}</td>
+                                                <td>{item.quantity}</td>
+                                                <td>{item.cost}</td>
+                                            </tr>
+                                        )
+                                    })}
+                                <tr>
+                                    <th></th>
+                                    <th>Delivery:</th>
+                                    <td>{delivery}</td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <th>Total:</th>
+                                    <td>{total ? total : null}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </form>
+                </div>
+            </>
+        )
+    }
     return (
         <>
-            <Nav />
-            <div id="main">
+            <Nav role={role} />
+            <div id={style.main}>
                 <form action="" style={style}>
-                    <Supplier setSupplier={setSupplier} suppliers={suppliers} initialSupplier={supplier}/>
+                    <div className={style.pageHeader}>
+                        Edit purchase
+                    </div>
+                    <Supplier setSupplier={setSupplier} suppliers={suppliers} initialSupplier={supplier} />
                     <div className={style.items}>
                         <p className={style.sectionHeader}>Items</p>
                         {
@@ -199,15 +236,16 @@ export default function PurchaseForm({
                                 <th>Amount</th>
                                 <th>Cost</th>
                             </tr>
-                            {items.map((item) => {
-                                return (
-                                    <tr>
-                                        <td>{item.item}</td>
-                                        <td>{item.quantity}</td>
-                                        <td>{item.cost}</td>
-                                    </tr>
-                                )
-                            })}
+                            {
+                                items.map((item) => {
+                                    return (
+                                        <tr>
+                                            <td>{item.item}</td>
+                                            <td>{item.quantity}</td>
+                                            <td>{item.cost}</td>
+                                        </tr>
+                                    )
+                                })}
                             <tr>
                                 <th></th>
                                 <th>Delivery:</th>
@@ -232,7 +270,18 @@ export default function PurchaseForm({
                             </div>) :
                             null
                     }
-
+                    {
+                        loading ? (
+                            <div className={style.loadingMessageContainer}>
+                                <div className={style.loading}>
+                                    Loading
+                                    <div className={style.loadingSpinner}></div>
+                                </div>
+                            </div>
+                        ) : (
+                            null
+                        )
+                    }
                 </form>
             </div>
         </>

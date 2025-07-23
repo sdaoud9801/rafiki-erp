@@ -12,14 +12,25 @@ body {
 }
 
 .container {
-    background-color: black;
+    background-color: #f1b8c7e1;
     display: flex;
     justify-content: center;
 }
 
+.pageHeader {
+    text-align: center;
+    font-weight: 700;
+    padding: 20px;
+    text-decoration: underline;
+}
+
 .innerContainer {
+    margin-top: 30px;
+    border: 1px solid grey;
+    border-radius: 10px;
     background-color: white;
     min-width: 320px;
+    width: 100%;
     max-width: 500px;
     min-height: 100vh;
     padding: 10px;

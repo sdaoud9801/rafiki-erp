@@ -1,0 +1,29 @@
+.pageHeader {
+    text-align: center;
+    font-weight: 700;
+    padding: 20px;
+    text-decoration: underline;
+    color: #D62757
+}
+
+.outerContainer {
+    background-color: #f1b8c7e1;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+.innerContainer {
+    width: 100%;
+    max-width: 560px;
+    background-color: white;
+    padding: 10px;
+    border: 1px solid lightgrey;
+    border-radius: 10px;
+    margin-top: 30px;
+}
+
+.successMessage {
+    background-color: green;
+    color: white;
+}

@@ -1,0 +1,95 @@
+body {
+    background-color: #f1b8c7e1;
+}
+
+.outerContainer {
+    display: flex;
+    justify-content: center;
+}
+
+.innerContainer {
+    width: 100%;
+    max-width: 400px;
+    padding: 10px;
+    border: 1px solid lightgrey;
+    background-color: white;
+    border-radius: 10px;
+    margin-top: 30px;
+}
+
+.formContainer {
+    padding: 10px 0px;
+}
+
+.header {
+    color: #D62757;
+    text-align: center; 
+    padding: 10px;
+    border-bottom: 1px solid #D62757;
+}
+
+.label {
+    display: block;
+    margin-top: 5px;
+}
+
+.textInput,
+.passwordInput {
+    display: block;
+    width: 100%;
+}
+
+.loginButton {
+    background-color: #44D627;
+    color: white;
+    border: none;
+    margin-top: 10px;
+    padding: 5px 10px;
+}
+
+.loginButtonLoading {
+    background-color: lightGrey;
+    color: white;
+    border: none;
+    margin-top: 10px;
+    padding: 5px 10px;
+}
+
+.errorMessage {
+    background-color: red;
+    color: white;
+    padding: 5px 5px;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+
+.loading {
+    background-color: grey;
+    padding: 5px;
+    margin-top: 20px;
+    color: white;
+    display: flex;
+    align-items: center;
+}
+
+.loadingSpinner {
+    height: 20px;
+    width: 20px;
+    color: white;
+    background-color: grey;
+    border-top: 5px solid white;
+    border-radius: 100%;
+    margin-left: 5px;
+    animation: rotate;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0turn)
+    }
+    to {
+        transform: rotate(1turn)
+    }
+}

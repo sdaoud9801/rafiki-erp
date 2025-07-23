@@ -1,0 +1,89 @@
+.purchaseContainer {
+    padding: 5px 0px;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    border-collapse: collapse;
+}
+
+.purchaseTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.purchaseTable td, .purchaseTable th {
+    border-top: 1px solid black;
+    border-collapse: collapse;
+}
+
+.alignRight {
+    text-align: right;
+}
+
+.alignCenter {
+    text-align: center;
+}
+
+.alignLeft {
+    text-align: left;
+}
+
+.approveButton {
+    text-decoration: none;
+    background-color: #44D627;
+    color: white;
+    padding: 5px;
+    border-radius: 3px;
+    border: none;
+}
+
+.approveButtonLoading {
+    text-decoration: none;
+    background-color: lightgrey;
+    color: white;
+    padding: 5px;
+    border-radius: 3px;
+    border: none;
+}
+
+.successMessage {
+    background-color: #44D627;
+    padding: 5px;
+    color: white;
+}
+
+.loadingMessageContainer {
+    padding: 5px;
+}
+
+.loading {
+    background-color: grey;
+    padding: 5px;
+    margin-top: 20px;
+    color: white;
+    display: flex;
+    align-items: center;
+    border-radius: 5px;
+}
+
+.loadingSpinner {
+    height: 20px;
+    width: 20px;
+    color: white;
+    background-color: grey;
+    border-top: 5px solid white;
+    border-radius: 100%;
+    margin-left: 5px;
+    animation: rotate;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0turn)
+    }
+    to {
+        transform: rotate(1turn)
+    }
+}

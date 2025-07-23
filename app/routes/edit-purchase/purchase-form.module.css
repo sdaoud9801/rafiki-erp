@@ -12,25 +12,29 @@ body {
     color: #D62757;
     margin: 0px;
     padding: 0px;
-}
-
-nav {
-    background-color: #D62757;
-    display: flex;
-    justify-content : center;
-    padding: 20px;
-    color: white;
-    width: 100%;
+    background-color: #f1b8c7e1;
 }
 
 #main {
     padding: 0px;
     overflow-x: hidden;
+    width: 100%;
+    max-width: 560px;
 }
 
 form {
-    border: 2px solid;
-    min-width: 320px;
+    background-color: white;
+    margin-top: 30px;
+    border: 2px solid lightgrey;
+    border-radius: 10px;
+    width: 100%;
+}
+
+.pageHeader {
+    text-align: center;
+    font-weight: 700;
+    padding: 20px;
+    text-decoration: underline;
 }
 
 select {
@@ -54,7 +58,6 @@ input[type="text"] {
 
 .items {
     padding: 10px 10px;
-    border-top: 2px solid #D62757;
 }
 
 .sectionHeader {
@@ -73,7 +76,6 @@ input[type="text"] {
 
 .delivery {
     padding: 10px;
-    border-top: 1px solid #D62757;
 }
 
 .delivery > input {
@@ -83,7 +85,6 @@ input[type="text"] {
 
 .preview {
     padding: 10px;
-    border: 1px solid #D62757;
 }
 
 .preview table, .preview table td, .preview table tr, .preview table th  {
@@ -117,4 +118,50 @@ input[type="text"] {
     color: white;
     padding: 5px;
     border-radius: 5px;
+}
+
+.loadingMessageContainer {
+    padding: 5px;
+}
+
+.loading {
+    background-color: grey;
+    padding: 5px;
+    margin-top: 20px;
+    color: white;
+    display: flex;
+    align-items: center;
+    border-radius: 5px;
+}
+
+.loadingSpinner {
+    height: 20px;
+    width: 20px;
+    color: white;
+    background-color: grey;
+    border-top: 5px solid white;
+    border-radius: 100%;
+    margin-left: 5px;
+    animation: rotate;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+}
+
+.successMessage {
+    color: #44D627;
+    text-align: center;
+}
+
+.successSupplier {
+    color: black;
+    margin-bottom: 5px;
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0turn)
+    }
+    to {
+        transform: rotate(1turn)
+    }
 }

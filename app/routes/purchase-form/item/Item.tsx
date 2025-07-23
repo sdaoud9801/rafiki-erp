@@ -47,13 +47,14 @@ export default function Item(
         if (value === "Other") {
             setOther(true);
             setSelectValue('Other');
-            updateItemName(position,"", items, setItems);
+            updateItemName(position, "", items, setItems);
         } else {
             setOther(false);
             setSelectValue(value);
             updateItemName(position, value, items, setItems);
         }
     }
+    console.log(categoriesAndItems);
     return (
         <div className={style.item}>
             <div className={style.itemHeader}>
@@ -63,33 +64,40 @@ export default function Item(
             <label className={style.itemLabel}>Category</label>
             <select onChange={(e) => { updateCategory(e.target.value) }} required>
                 <option disabled selected>-- select an option --</option>
-                { Object.keys(categoriesAndItems).map((category)=>{
+                {Object.keys(categoriesAndItems).map((category) => {
                     return <option>{category}</option>
                 })}
             </select>
             <label className={style.itemLabel}>Item</label>
             <select value={selectValue ? selectValue : '-- select an option --'} onChange={(e) => { updateItem(e.target.value) }} ref={itemRef}>
                 <option selected disabled>{category ? ("-- select an option --") : ("Please select a category")}</option>
-                { (category && (category != '-- select an option --')) ? 
-                    categoriesAndItems[category].map((item:string)=>{
-                        return <option>{item}</option>
-                    }): null
+                {(category && (category != '-- select an option --') && categoriesAndItems[category].length > 0) ? (
+                    categoriesAndItems[category].map((item: string) => {
+                        if (!item) {
+                        } else {
+                            return <option>{item}</option>
+
+                        }
+                    }
+                    ))
+                    : null
                 }
+
                 {
                     category ?
-                    (<option>Other</option>) :
-                    null
+                        (<option>Other</option>) :
+                        null
                 }
             </select>
             {
-            other ? (
-                <>
-                    <label className={style.itemLabel}>
-                        New Item
-                    </label>
-                    <input type="text" onChange={(e) => { updateItemName(position, e.target.value, items, setItems) }} required></input>
-                </>
-            ) : null
+                other ? (
+                    <>
+                        <label className={style.itemLabel}>
+                            New Item
+                        </label>
+                        <input type="text" onChange={(e) => { updateItemName(position, e.target.value, items, setItems) }} required></input>
+                    </>
+                ) : null
             }
 
             <label className={style.itemLabel}>

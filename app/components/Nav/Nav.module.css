@@ -1,8 +1,47 @@
 nav {
     background-color: #D62757;
     display: flex;
-    justify-content : center;
-    padding: 20px;
+    flex-direction: column;
     color: white;
     width: 100%;
+}
+
+.mainContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+}
+
+nav span {
+    color: white;
+}
+
+.hide {
+    display: none;
+}
+
+.links {
+    display: flex;  
+    flex-direction: column;
+    background-color: #D62757;
+    border-collapse: collapse;
+}
+
+.links a {
+    color: white;
+    text-decoration: none;
+    padding: 10px;
+    border-collapse: collapse;
+}
+
+.links hr {
+    color: white;
+    width: 100%;
+    margin: 0px;
+}
+
+.menuIcon {
+    color: white;
+    width: 40px;
 }

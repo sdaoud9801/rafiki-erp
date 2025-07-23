@@ -1,12 +1,15 @@
 import Nav from "~/components/Nav/Nav";
 import style from './view-purchases.module.css';
 import { useState } from 'react';
+import Error from "~/components/Error/Error";
 import PurchaseRow from "./PurchaseRow/PurchaseRow";
 
 export async function clientLoader() {
-    const res = await fetch('http://localhost:3000/viewitems');
+    const res = await fetch('http://localhost:3000/user/view-purchases/viewitems', {
+        credentials: 'include'
+    });
     const purchases = await res.json();
-    return purchases.purchases;
+    return purchases;
 }
 
 type Purchase = {
@@ -22,11 +25,30 @@ type Purchase = {
     }[]
 }
 
+type ErrorObject = {
+    error: string,
+    data: null
+}
+
+type ReturnObject = {
+    error: null,
+    data: {
+        purchases: Purchase[],
+        role: 'admin' | 'user'
+    }
+}
+
 export default function viewPurchases({
     loaderData
 }: {
-    loaderData: any
+    loaderData: ErrorObject | ReturnObject
 }) {
+    if (loaderData.error) {
+        return (<Error message={loaderData.error} />)
+    }
+    let returnObject = loaderData as ReturnObject;
+    let { data } = returnObject;
+    let role = data.role;
     const [sortBy, setSortBy] = useState('Newest');
     const [dateRange, setDateRange]: [{
         from: null | string,
@@ -38,7 +60,7 @@ export default function viewPurchases({
     const [visiblePurchases, setVisiblePurchases]: [
         Purchase[],
         any
-    ] = useState(loaderData);
+    ] = useState(data.purchases);
     const [filterError, setFilterError]: [null | string, any] = useState(null);
     let sortedVisiblePurchases;
     if (sortBy === 'Newest') {
@@ -70,7 +92,7 @@ export default function viewPurchases({
         if ((dateRange.from !== null) && (dateRange.to !== null)) {
             let startDate = Date.parse(dateRange.from);
             let endDate = Date.parse(dateRange.to) + (1000 * 60 * 60 * 24);
-            let newVisiblePurchases = loaderData.filter((purchase: Purchase) => {
+            let newVisiblePurchases = data.purchases.filter((purchase: Purchase) => {
                 let purchaseDate = Date.parse(purchase.date);
                 return ((purchaseDate > startDate) && (purchaseDate < endDate));
             })
@@ -83,9 +105,12 @@ export default function viewPurchases({
 
     return (
         <div style={style}>
-            <Nav />
+            <Nav role={role} />
             <div className={style.container}>
                 <div className={style.innerContainer}>
+                    <div className={style.pageHeader}>
+                        View purchases
+                    </div>
                     Sort by:
                     <select value={sortBy} onChange={(e) => { setSortBy(e.target.value) }}>
                         <option>Newest</option>
@@ -113,11 +138,15 @@ export default function viewPurchases({
                             <th></th>
                         </tr>
                         {
+                            visiblePurchases.length > 0 ?
                             visiblePurchases.map((purchase: Purchase) => {
                                 return (
                                     <PurchaseRow purchase={purchase} key={purchase.purchase_id} />
                                 )
-                            })
+                            }) :
+                            (
+                                <div>No purchases created</div>
+                            )
                         }
                     </table>
                 </div>
