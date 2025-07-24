@@ -5,7 +5,7 @@ import ErrorComponent from '~/components/Error/Error';
 import { useState } from 'react';
 
 export async function clientLoader() {
-    let res = await fetch('http://localhost:3000/admin/categories', {
+    let res = await fetch('/admin/categories', {
         credentials: 'include'
     });
     let loaderData = await res.json();
